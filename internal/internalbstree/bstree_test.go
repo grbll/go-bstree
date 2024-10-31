@@ -2,56 +2,100 @@
 package bstree_test
 
 import (
-	"fmt"
 	"testing"
 
 	ibs "github.com/grbll/go-bstree/internal/internalbstree"
 )
 
-type IntWrapper struct {
-	Value int
+// Mock type to implement Comparable interface
+type MyInt int
+
+func (d MyInt) Less(value MyInt) bool {
+	return d < value
 }
 
-func (a IntWrapper) String() string {
-	return fmt.Sprintf("%v", a.Value)
+// Mock implementation of DataInterface
+type IntHolder struct {
+	value MyInt
 }
 
-func (a IntWrapper) Less(b IntWrapper) bool {
-	return a.Value < b.Value
+// Implement the Get method for IntHolder
+func (i *IntHolder) Get() *MyInt {
+	return &i.value
 }
+
+// Implement the Set method for IntHolder
+func (i *IntHolder) Set(value MyInt) {
+	i.value = value
+}
+
+// Test for creating a new tree node
+func TestNewTreeNode(t *testing.T) {
+	holder := &IntHolder{value: 10}
+	node := ibs.NewTreeNode(holder)
+
+	if (*node.Data).Get() == nil || *(*node.Data).Get() != holder.value {
+		t.Errorf("Expected node value to be %d, got %v", holder.value, (*node.Data).Get())
+	}
+}
+
+// Test for inserting values into the tree
 func TestTreeNodeInsert(t *testing.T) {
-	root := ibs.NewTreeNode[IntWrapper]()
+	rootHolder := &IntHolder{value: 10}
+	root := ibs.NewTreeNode(rootHolder)
 
-	values := []IntWrapper{{10}, {5}, {15}, {3}, {7}, {12}, {18}}
-	for _, v := range values {
-		root.Insert(v)
+	// Insert values into the tree
+	valuesToInsert := []MyInt{5, 15, 3, 7, 12, 18, 1, 4, 6, 8} // Total of 10 nodes
+	for _, val := range valuesToInsert {
+		root.Insert(&IntHolder{value: val})
 	}
 
-	// Root node test
-	if root.Data == nil || (*root.Data).Value != 10 {
-		t.Errorf("Expected root node with value 10, got %v", root.Data)
+	// Check the structure of the tree
+	if root.Left == nil || *(*root.Left.Data).Get() != 5 {
+		t.Errorf("Expected left child value to be 5, got %v", (*root.Left.Data).Get())
 	}
-
-	// Left and right child tests
-	if root.Left == nil || (*root.Left.Data).Value != 5 {
-		t.Errorf("Expected left child of root to be 5, got %v", root.Left)
+	if root.Right == nil || *(*root.Right.Data).Get() != 15 {
+		t.Errorf("Expected right child value to be 15, got %v", (*root.Right.Data).Get())
 	}
-	if root.Right == nil || (*root.Right.Data).Value != 15 {
-		t.Errorf("Expected right child of root to be 15, got %v", root.Right)
+	if root.Left.Left == nil || *(*root.Left.Left.Data).Get() != 3 {
+		t.Errorf("Expected left-left child value to be 3, got %v", (*root.Left.Left.Data).Get())
+	}
+	if root.Left.Right == nil || *(*root.Left.Right.Data).Get() != 7 {
+		t.Errorf("Expected left-right child value to be 7, got %v", (*root.Left.Right.Data).Get())
+	}
+	if root.Right.Left == nil || *(*root.Right.Left.Data).Get() != 12 {
+		t.Errorf("Expected right-left child value to be 12, got %v", (*root.Right.Left.Data).Get())
+	}
+	if root.Right.Right == nil || *(*root.Right.Right.Data).Get() != 18 {
+		t.Errorf("Expected right-right child value to be 18, got %v", (*root.Right.Right.Data).Get())
+	}
+	if root.Left.Left.Left == nil || *(*root.Left.Left.Left.Data).Get() != 1 {
+		t.Errorf("Expected left-left-left child value to be 1, got %v", (*root.Left.Left.Left.Data).Get())
+	}
+	if root.Left.Left.Right == nil || *(*root.Left.Left.Right.Data).Get() != 4 {
+		t.Errorf("Expected left-left-right child value to be 4, got %v", (*root.Left.Left.Right.Data).Get())
+	}
+	if root.Left.Right.Left == nil || *(*root.Left.Right.Left.Data).Get() != 6 {
+		t.Errorf("Expected left-right-left child value to be 6, got %v", (*root.Left.Right.Left.Data).Get())
+	}
+	if root.Left.Right.Right == nil || *(*root.Left.Right.Right.Data).Get() != 8 {
+		t.Errorf("Expected left-right-right child value to be 8, got %v", (*root.Left.Right.Right.Data).Get())
 	}
 }
 
+// Test for string representation of the tree
 func TestTreeNodeString(t *testing.T) {
-	root := ibs.NewTreeNode[IntWrapper]()
-	values := []IntWrapper{{10}, {5}, {15}, {3}, {7}, {12}, {18}}
-	for _, v := range values {
-		root.Insert(v)
+	holder := &IntHolder{value: 10}
+	root := ibs.NewTreeNode(holder)
+
+	// Insert values into the tree
+	valuesToInsert := []MyInt{5, 15, 3, 7} // Total of 4 nodes
+	for _, val := range valuesToInsert {
+		root.Insert(&IntHolder{value: val})
 	}
 
-	// Expected string output check
-	expected := "10[5[3[<nil>,<nil>],7[<nil>,<nil>]],15[12[<nil>,<nil>],18[<nil>,<nil>]]]"
-	result := root.String()
-	if result != expected {
-		t.Errorf("Expected string representation %s, got %s", expected, result)
+	expectedString := "10[5[3[<nil>,<nil>],7[<nil>,<nil>]],15[<nil>,<nil>]]"
+	if root.String() != expectedString {
+		t.Errorf("Expected string representation to be %s, got %s", expectedString, root.String())
 	}
 }
