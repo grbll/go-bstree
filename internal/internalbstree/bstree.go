@@ -12,8 +12,7 @@ type Comparable[T any] interface {
 
 // DataInterface for holding values
 type DataInterface[B any] interface {
-	Get() *B
-	Set(value B)
+	Value() *B
 }
 
 // TreeNode structure holding data
@@ -35,7 +34,7 @@ func (tree *TreeNode[T, B]) Insert(data T) {
 
 	for {
 		if (*head).Data != nil {
-			if (*data.Get()).Less(*(*(*head).Data).Get()) { //a smaller value should go to the right side
+			if (*data.Value()).Less(*(*(*head).Data).Value()) { //a smaller value should go to the right side
 				if (*head).Left != nil {
 					head = &(*head).Left //if left child is not nil, we keep looking...
 				} else {
@@ -63,7 +62,7 @@ func (tree *TreeNode[T, B]) String() string {
 
 	if tree != nil {
 		sb := strings.Builder{}
-		sb.WriteString(fmt.Sprintf("%v", *(*tree.Data).Get()))
+		sb.WriteString(fmt.Sprintf("%v", *(*tree.Data).Value()))
 		sb.WriteByte('[')
 		sb.WriteString(tree.Left.String())
 		sb.WriteByte(',')
