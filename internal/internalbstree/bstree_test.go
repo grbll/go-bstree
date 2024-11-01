@@ -89,8 +89,35 @@ func TestTreeNodeString(t *testing.T) {
 		root.Insert(&IntHolder{value: val})
 	}
 
-	expectedString := "10[5[3[<nil>,<nil>],7[<nil>,<nil>]],15[<nil>,<nil>]]"
+	expectedString := "10[5[3[,],7[,]],15[,]]"
 	if root.String() != expectedString {
 		t.Errorf("Expected string representation to be %s, got %s", expectedString, root.String())
+	}
+}
+
+func TestTreeNodeSlice(t *testing.T) {
+	// Create the root node
+	rootHolder := IntHolder{value: 10}
+	root := ibs.NewTreeNode(rootHolder)
+
+	// Insert values into the tree
+	valuesToInsert := []MyInt{5, 15, 3, 7, 12, 18, 1, 4, 6, 8}
+	for _, val := range valuesToInsert {
+		root.Insert(IntHolder{value: val})
+	}
+
+	// Expected output for in-order traversal of the inserted values
+	expectedSlice := []MyInt{1, 3, 4, 5, 6, 7, 8, 10, 12, 15, 18}
+	actualSlice := root.Slice()
+
+	// Check if the actual slice matches the expected slice
+	if len(actualSlice) != len(expectedSlice) {
+		t.Fatalf("Expected slice length %d, got %d", len(expectedSlice), len(actualSlice))
+	}
+
+	for i, v := range expectedSlice {
+		if actualSlice[i] != v {
+			t.Errorf("Expected slice value at index %d to be %d, got %d", i, v, actualSlice[i])
+		}
 	}
 }
