@@ -59,17 +59,57 @@ func (tree *TreeNode[T, B]) Insert(data T) {
 
 // tree to string method
 func (tree *TreeNode[T, B]) String() string {
-
 	if tree != nil {
+		origin := 0
 		sb := strings.Builder{}
-		sb.WriteString(fmt.Sprintf("%v", *(*tree.Data).Value()))
-		sb.WriteByte('[')
-		sb.WriteString(tree.Left.String())
-		sb.WriteByte(',')
-		sb.WriteString(tree.Right.String())
+		head := &tree
+
+		for (*head).Parent != nil || origin != 2 {
+			if origin == 0 {
+				if (*head).Data != nil && (*(*head).Data).Value() != nil {
+					sb.WriteString(fmt.Sprintf("%v", *(*(*head).Data).Value()))
+				} else {
+					sb.WriteString(fmt.Sprintf("%v", nil))
+				}
+				sb.WriteByte('[')
+				if (*head).Left == nil {
+					sb.WriteString(fmt.Sprintf("%v", nil))
+					origin = 1
+				} else {
+					head = &(*head).Left
+					origin = 0
+				}
+			} else if origin == 1 {
+				sb.WriteByte(',')
+				if (*head).Right == nil {
+					sb.WriteString(fmt.Sprintf("%v", nil))
+					origin = 2
+				} else {
+					head = &(*head).Right
+					origin = 0
+				}
+			} else {
+				sb.WriteByte(']')
+				if (*head).Parent.Left == (*head) {
+					origin = 1
+				} else {
+					origin = 2
+				}
+				head = &(*head).Parent
+			}
+
+		}
 		sb.WriteByte(']')
 
 		return sb.String()
+
+		// sb.WriteString(fmt.Sprintf("%v", *(*tree.Data).Value()))
+		// sb.WriteByte('[')
+		// sb.WriteString(tree.Left.String())
+		// sb.WriteByte(',')
+		// sb.WriteString(tree.Right.String())
+		// sb.WriteByte(']')
+
 	} else {
 		return fmt.Sprintf("%v", nil)
 	}
