@@ -28,6 +28,52 @@ func NewTreeNode[T DataInterface[B], B Comparable[B]](data T) *TreeNode[T, B] {
 	return &TreeNode[T, B]{Data: &data, Parent: nil, Left: nil, Right: nil}
 }
 
+func depthFirstTraversel[T DataInterface[B], B Comparable[B], C any](tree *TreeNode[T, B], hook func(node *TreeNode[T, B], direction int, outputPointer *C)) C {
+	var output C
+	direction := 0
+	if tree != nil {
+		for tree.Parent != nil || direction != 2 {
+			if direction == 0 {
+
+				hook(tree, direction, &output)
+
+				if tree.Left != nil {
+					tree = tree.Left
+				} else {
+					hook(nil, direction, &output)
+					direction = 1
+				}
+
+			} else if direction == 1 {
+				hook(tree, direction, &output)
+
+				if tree.Right != nil {
+					tree = tree.Right
+					direction = 0
+				} else {
+					hook(nil, 0, &output)
+					direction = 2
+				}
+
+			} else { //direction == 2
+
+				hook(tree, direction, &output)
+				if tree == tree.Parent.Left {
+					direction = 1
+				} else {
+					direction = 2
+				}
+				tree = tree.Parent
+
+			}
+			hook(tree, direction, &output)
+		}
+	} else {
+		hook(nil, direction, &output)
+	}
+	return output
+}
+
 // insert method based on comparison
 func (tree *TreeNode[T, B]) Insert(data T) {
 	var head **TreeNode[T, B] = &tree
