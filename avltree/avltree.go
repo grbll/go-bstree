@@ -25,23 +25,27 @@ func (data avlData[T]) Balance() *int {
 }
 
 type avlNode[B ibs.Comparable[B]] struct {
-	ibs.TreeNode[avlData[B], B]
+	ibs.TreeNode[avlData[B], avlNode[B]]
 }
 
-func NewAVLNode[B ibs.Comparable[B]](value B) *avlNode[B] {
-	return &avlNode[B]{*ibs.NewTreeNode(*newAVLData(value))}
+func (tree *avlNode[B]) Insert(data avlData[B]) {
+	tree.Left = &avlNode[B]{TreeNode: ibs.TreeNode[avlData[B], avlNode[B]]{Data: &data, Parent: tree}}
 }
 
-func NewAVLTree[B ibs.Comparable[B]](values []B) (*avlNode[B], error) {
-	if len(values) != 0 {
-		tree := NewAVLNode(values[0])
+// func NewAVLNode[B ibs.Comparable[B]](value B) *avlNode[B] {
+// 	return &avlNode[B]{*ibs.NewTreeNode(*newAVLData(value))}
+// }
 
-		for _, value := range values[1:] {
-			tree.Insert(*newAVLData(value))
-		}
-
-		return tree, nil
-	} else {
-		return nil, errors.New("Needs at leas one value to create Tree.")
-	}
-}
+// func NewAVLTree[B ibs.Comparable[B]](values []B) (*avlNode[B], error) {
+// 	if len(values) != 0 {
+// 		tree := NewAVLNode(values[0])
+//
+// 		for _, value := range values[1:] {
+// 			tree.Insert(*newAVLData(value))
+// 		}
+//
+// 		return tree, nil
+// 	} else {
+// 		return nil, errors.New("Needs at leas one value to create Tree.")
+// 	}
+// }
