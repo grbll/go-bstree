@@ -1,7 +1,7 @@
 package tree_test
 
 import (
-	"github.com/grbll/go-bstree/tree/main/internal/internaltree"
+	"github.com/grbll/go-bstree/tree/main/internal/tree"
 	"reflect"
 	"testing"
 )
