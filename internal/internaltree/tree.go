@@ -6,7 +6,7 @@ type Node[T any] interface {
 	Right() *T
 }
 
-func depthFirstTraversel[T Node[T], C any](tree *T, hook func(node *T, direction uint8, outputPointer *C) C) C {
+func DepthFirstTraversel[T Node[T], C any](tree *T, hook func(node *T, direction uint8, outputPointer *C) C) C {
 	var out C
 	var direction uint8 = 0 //0-> left child next, 1->right child next, 2->parent next
 	if tree != nil {
